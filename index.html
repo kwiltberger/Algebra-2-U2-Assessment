@@ -12,8 +12,7 @@ body{font-family:Arial,sans-serif;background:#f6f9fb;color:#1f2933;line-height:1
 .green{background:#eefaf1;border-left-color:#3ca65c}
 .yellow{background:#fff8e6;border-left-color:#f2b705}
 .gray{background:#f6f9fb;border-left-color:#d6e6ef}
-input,textarea{width:100%;max-width:720px;padding:12px;font-size:16px;border:2px solid #d6e6ef;border-radius:8px;margin:6px 0 12px;box-sizing:border-box}
-textarea{min-height:90px;resize:vertical}
+input{width:100%;max-width:720px;padding:12px;font-size:16px;border:2px solid #d6e6ef;border-radius:8px;margin:6px 0 12px;box-sizing:border-box}
 button{background:#0f2d44;color:white;border:none;padding:12px 18px;border-radius:8px;cursor:pointer;font-size:16px;margin:6px 4px 6px 0}
 button:disabled{background:#7b8794;cursor:not-allowed}
 .problem{background:white;border:1px solid #d6e6ef;padding:14px;border-radius:8px;margin:12px 0}
@@ -25,7 +24,7 @@ th{background:#0f2d44;color:white}
 .canvas-wrap{background:white;border:2px solid #d6e6ef;border-radius:8px;padding:10px;margin-top:8px;overflow-x:auto}
 canvas{border:1px solid #b8c7d1;background:white;touch-action:none}
 #assessmentArea{display:none}
-@media print{button,input,textarea{display:none}body{background:white}}
+@media print{button,input{display:none}body{background:white}}
 </style>
 </head>
 
@@ -34,7 +33,7 @@ canvas{border:1px solid #b8c7d1;background:white;touch-action:none}
 
 <div class="hero">
 <h1>Algebra 2 | Unit 2 Assessment Generator</h1>
-<p>Complex Numbers, Quadratic Equations & Polynomial Functions</p>
+<p>Complex Numbers, Quadratic Equations &amp; Polynomial Functions</p>
 </div>
 
 <div class="card">
@@ -87,7 +86,7 @@ canvas{border:1px solid #b8c7d1;background:white;touch-action:none}
 <p>☐ Say your assessment code.</p>
 <p>☐ Show the generated problems clearly.</p>
 <p>☐ Solve all 6 problems.</p>
-<p>☐ Explain your reasoning.</p>
+<p>☐ Explain your reasoning out loud.</p>
 <p>☐ Use correct Algebra 2 vocabulary.</p>
 <p>☐ Explain how you know your answers make sense.</p>
 </div>
@@ -180,25 +179,28 @@ selected.forEach((p,i)=>{
 html+=`
 <details open>
 <summary>${labels[i]}</summary>
+
 <div class="problem">
 <p><strong>Problem ${i+1}:</strong></p>
 <p>${p.t}</p>
 </div>
 
 <div class="card gray">
+<label><strong>Mathematical Workspace:</strong></label>
+<p>Use this space to write equations, organize your work, sketch graphs, or solve the problem while recording.</p>
+
+<div class="canvas-wrap">
+<canvas id="canvas${i}" width="760" height="260"></canvas>
+</div>
+
+<button type="button" onclick="clearCanvas(${i})">Clear Workspace</button>
+
+<br><br>
+
 <label><strong>Final Answer:</strong></label><br>
 <input class="student-response" id="answer${i}" placeholder="Type your final answer here">
-
-<label><strong>Explain Your Reasoning:</strong></label><br>
-<textarea class="student-response" id="reason${i}" placeholder="Explain your steps and reasoning here"></textarea>
-
-<label><strong>Mathematical Workspace:</strong></label>
-<p>Use this space to show work, organize steps, or sketch a graph while recording.</p>
-<div class="canvas-wrap">
-<canvas id="canvas${i}" width="760" height="240"></canvas>
 </div>
-<button type="button" onclick="clearCanvas(${i})">Clear Workspace</button>
-</div>
+
 </details>`;
 });
 
