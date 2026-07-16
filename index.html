@@ -12,7 +12,8 @@ body{font-family:Arial,sans-serif;background:#f6f9fb;color:#1f2933;line-height:1
 .green{background:#eefaf1;border-left-color:#3ca65c}
 .yellow{background:#fff8e6;border-left-color:#f2b705}
 .gray{background:#f6f9fb;border-left-color:#d6e6ef}
-input{width:100%;max-width:720px;padding:12px;font-size:16px;border:2px solid #d6e6ef;border-radius:8px;margin:6px 0 12px;box-sizing:border-box}
+input,select{width:100%;max-width:720px;padding:12px;font-size:16px;border:2px solid #d6e6ef;border-radius:8px;margin:6px 0 12px;box-sizing:border-box}
+.small{max-width:180px}
 button{background:#0f2d44;color:white;border:none;padding:12px 18px;border-radius:8px;cursor:pointer;font-size:16px;margin:6px 4px 6px 0}
 button:disabled{background:#7b8794;cursor:not-allowed}
 .problem{background:white;border:1px solid #d6e6ef;padding:14px;border-radius:8px;margin:12px 0}
@@ -24,7 +25,7 @@ th{background:#0f2d44;color:white}
 .canvas-wrap{background:white;border:2px solid #d6e6ef;border-radius:8px;padding:10px;margin-top:8px;overflow-x:auto}
 canvas{border:1px solid #b8c7d1;background:white;touch-action:none}
 #assessmentArea{display:none}
-@media print{button,input{display:none}body{background:white}}
+@media print{button,input,select{display:none}body{background:white}}
 </style>
 </head>
 
@@ -92,45 +93,44 @@ canvas{border:1px solid #b8c7d1;background:white;touch-action:none}
 </div>
 
 </div>
-
 </div>
 
 <script>
 const complexProblems=[
-{t:"Identify the real and imaginary parts of the complex number −6 + 4i. Remember: the imaginary part should include i."},
-{t:"Identify the real and imaginary parts of the complex number 9 − 7i. Remember: the imaginary part should include i."},
-{t:"Simplify: (5 + 3i) + (−2 + 8i). Write your answer in a + bi form."},
-{t:"Simplify: (7 − 4i) − (3 + 6i). Write your answer in a + bi form."},
-{t:"Simplify: (2 + 5i)(3 − i). Write your answer in a + bi form."},
-{t:"Simplify: (4 − 2i)(1 + 3i). Write your answer in a + bi form."},
-{t:"Simplify: i^23."},
-{t:"Simplify: i^34."}
+{type:"standard",t:"Identify the real and imaginary parts of the complex number −6 + 4i. Remember: the imaginary part should include i."},
+{type:"standard",t:"Identify the real and imaginary parts of the complex number 9 − 7i. Remember: the imaginary part should include i."},
+{type:"standard",t:"Simplify: (5 + 3i) + (−2 + 8i). Write your answer in a + bi form."},
+{type:"standard",t:"Simplify: (7 − 4i) − (3 + 6i). Write your answer in a + bi form."},
+{type:"standard",t:"Simplify: (2 + 5i)(3 − i). Write your answer in a + bi form."},
+{type:"standard",t:"Simplify: (4 − 2i)(1 + 3i). Write your answer in a + bi form."},
+{type:"standard",t:"Simplify: i^23."},
+{type:"standard",t:"Simplify: i^34."}
 ];
 
 const quadraticProblems=[
-{t:"Solve using the Zero Product Property: (x − 6)(x + 4) = 0."},
-{t:"Solve using the Zero Product Property: x(x − 9) = 0."},
-{t:"Solve by taking square roots: x² + 64 = 0."},
-{t:"Solve by taking square roots: x² − 121 = 0."},
-{t:"Solve by factoring: x² + 7x + 10 = 0."},
-{t:"Solve by factoring: 2x² + 9x + 4 = 0."},
-{t:"Solve by completing the square: x² + 8x + 7 = 0."},
-{t:"Solve by completing the square: x² − 6x + 5 = 0."},
-{t:"Solve using the quadratic formula: x² − 4x + 13 = 0."},
-{t:"Solve using the quadratic formula: 2x² + 5x − 3 = 0."}
+{type:"standard",t:"Solve using the Zero Product Property: (x − 6)(x + 4) = 0."},
+{type:"standard",t:"Solve using the Zero Product Property: x(x − 9) = 0."},
+{type:"standard",t:"Solve by taking square roots: x² + 64 = 0."},
+{type:"standard",t:"Solve by taking square roots: x² − 121 = 0."},
+{type:"standard",t:"Solve by factoring: x² + 7x + 10 = 0."},
+{type:"standard",t:"Solve by factoring: 2x² + 9x + 4 = 0."},
+{type:"standard",t:"Solve by completing the square: x² + 8x + 7 = 0."},
+{type:"standard",t:"Solve by completing the square: x² − 6x + 5 = 0."},
+{type:"standard",t:"Solve using the quadratic formula: x² − 4x + 13 = 0."},
+{type:"standard",t:"Solve using the quadratic formula: 2x² + 5x − 3 = 0."}
 ];
 
 const polynomialProblems=[
-{t:"Find the zeros of f(x) = (x + 5)(x − 2)(x − 7)."},
-{t:"Find the zeros of f(x) = −2(x − 3)(x + 1)²."},
-{t:"Use the Factor Theorem to determine whether (x − 2) is a factor of f(x)=x³ − 5x² + 2x + 8."},
-{t:"Use the Factor Theorem to determine whether (x + 1) is a factor of f(x)=x³ + 2x² − 5x − 6."},
-{t:"Use the Remainder Theorem to find the remainder when f(x)=x³ − 2x² − 5x + 6 is divided by (x − 2)."},
-{t:"Use the Remainder Theorem to find the remainder when f(x)=2x³ − 3x² + x − 4 is divided by (x + 1)."},
-{t:"For f(x)=(x − 4)²(x + 3), identify each zero, its multiplicity, and whether the graph crosses or touches the x-axis."},
-{t:"For f(x)=−(x + 2)(x − 1)², identify each zero, its multiplicity, and whether the graph crosses or touches the x-axis."},
-{t:"Describe the end behavior of f(x)=−3x⁵ + 2x² − 8."},
-{t:"Describe the end behavior of f(x)=4x⁴ − 7x + 1."}
+{type:"zeros",t:"Find the zeros of f(x) = (x + 5)(x − 2)(x − 7)."},
+{type:"zeros",t:"Find the zeros of f(x) = −2(x − 3)(x + 1)²."},
+{type:"factor",t:"Use the Factor Theorem to determine whether (x − 2) is a factor of f(x)=x³ − 5x² + 2x + 8."},
+{type:"factor",t:"Use the Factor Theorem to determine whether (x + 1) is a factor of f(x)=x³ + 2x² − 5x − 6."},
+{type:"remainder",t:"Use the Remainder Theorem to find the remainder when f(x)=x³ − 2x² − 5x + 6 is divided by (x − 2)."},
+{type:"remainder",t:"Use the Remainder Theorem to find the remainder when f(x)=2x³ − 3x² + x − 4 is divided by (x + 1)."},
+{type:"fullPoly",t:"For f(x)=(x − 4)²(x + 3), identify each zero, its multiplicity, and whether the graph crosses or touches the x-axis."},
+{type:"fullPoly",t:"For f(x)=−(x + 2)(x − 1)², identify each zero, its multiplicity, and whether the graph crosses or touches the x-axis."},
+{type:"end",t:"Describe the end behavior of f(x)=−3x⁵ + 2x² − 8."},
+{type:"end",t:"Describe the end behavior of f(x)=4x⁴ − 7x + 1."}
 ];
 
 function sampleTwo(arr){
@@ -142,6 +142,146 @@ return [first,second];
 
 function makeCode(){
 return "U2A-" + Math.random().toString(36).substring(2,7).toUpperCase();
+}
+
+function workspace(i){
+return `
+<div class="card gray">
+<label><strong>Mathematical Workspace:</strong></label>
+<p>Use this space to write equations, organize your work, sketch graphs, or solve the problem while recording.</p>
+<div class="canvas-wrap">
+<canvas id="canvas${i}" width="760" height="260"></canvas>
+</div>
+<button type="button" onclick="clearCanvas(${i})">Clear Workspace</button>
+<br><br>
+`;
+}
+
+function standardAnswer(i){
+return `
+<label><strong>Final Answer:</strong></label><br>
+<input class="student-response" id="answer${i}" placeholder="Type your final answer here">
+</div>`;
+}
+
+function zerosAnswer(i){
+return `
+<h4 style="color:#0f2d44;">Final Answer</h4>
+<p>Enter the zeros you found.</p>
+<p>
+Zero 1: <input class="small" id="zero${i}_1">
+Zero 2: <input class="small" id="zero${i}_2">
+Zero 3: <input class="small" id="zero${i}_3">
+</p>
+</div>`;
+}
+
+function factorAnswer(i){
+return `
+<h4 style="color:#0f2d44;">Final Answer</h4>
+<p>Is the given expression a factor?</p>
+<select id="factor${i}">
+<option value="">Choose one</option>
+<option>Yes, it is a factor.</option>
+<option>No, it is not a factor.</option>
+</select>
+<p>Value used with the Factor Theorem:</p>
+<input class="small" id="factorValue${i}" placeholder="f(c) value">
+</div>`;
+}
+
+function remainderAnswer(i){
+return `
+<h4 style="color:#0f2d44;">Final Answer</h4>
+<p>Remainder:</p>
+<input class="small" id="remainder${i}" placeholder="Enter remainder">
+</div>`;
+}
+
+function endBehaviorAnswer(i){
+return `
+<h4 style="color:#0f2d44;">Final Answer</h4>
+<p>Select the end behavior.</p>
+<p>
+Left end:
+<select class="small" id="left${i}">
+<option value="">Choose one</option>
+<option>Rises</option>
+<option>Falls</option>
+</select>
+</p>
+<p>
+Right end:
+<select class="small" id="right${i}">
+<option value="">Choose one</option>
+<option>Rises</option>
+<option>Falls</option>
+</select>
+</p>
+</div>`;
+}
+
+function fullPolyAnswer(i){
+return `
+<h4 style="color:#0f2d44;">Final Answer</h4>
+<p>Complete the table for the zeros, multiplicity, and graph behavior.</p>
+
+<table>
+<tbody>
+<tr>
+<th>Zero</th>
+<th>Multiplicity</th>
+<th>Graph Behavior</th>
+</tr>
+<tr>
+<td><input class="small" id="poly${i}_z1" placeholder="zero"></td>
+<td><input class="small" id="poly${i}_m1" placeholder="multiplicity"></td>
+<td>
+<select id="poly${i}_b1">
+<option value="">Choose one</option>
+<option>Crosses the x-axis</option>
+<option>Touches and turns</option>
+</select>
+</td>
+</tr>
+<tr>
+<td><input class="small" id="poly${i}_z2" placeholder="zero"></td>
+<td><input class="small" id="poly${i}_m2" placeholder="multiplicity"></td>
+<td>
+<select id="poly${i}_b2">
+<option value="">Choose one</option>
+<option>Crosses the x-axis</option>
+<option>Touches and turns</option>
+</select>
+</td>
+</tr>
+<tr>
+<td><input class="small" id="poly${i}_z3" placeholder="zero if needed"></td>
+<td><input class="small" id="poly${i}_m3" placeholder="multiplicity if needed"></td>
+<td>
+<select id="poly${i}_b3">
+<option value="">Choose one if needed</option>
+<option>Crosses the x-axis</option>
+<option>Touches and turns</option>
+</select>
+</td>
+</tr>
+</tbody>
+</table>
+</div>`;
+}
+
+function responseArea(problem,i){
+let html=workspace(i);
+
+if(problem.type==="zeros") html+=zerosAnswer(i);
+else if(problem.type==="factor") html+=factorAnswer(i);
+else if(problem.type==="remainder") html+=remainderAnswer(i);
+else if(problem.type==="end") html+=endBehaviorAnswer(i);
+else if(problem.type==="fullPoly") html+=fullPolyAnswer(i);
+else html+=standardAnswer(i);
+
+return html;
 }
 
 function generateAssessment(){
@@ -179,28 +319,11 @@ selected.forEach((p,i)=>{
 html+=`
 <details open>
 <summary>${labels[i]}</summary>
-
 <div class="problem">
 <p><strong>Problem ${i+1}:</strong></p>
 <p>${p.t}</p>
 </div>
-
-<div class="card gray">
-<label><strong>Mathematical Workspace:</strong></label>
-<p>Use this space to write equations, organize your work, sketch graphs, or solve the problem while recording.</p>
-
-<div class="canvas-wrap">
-<canvas id="canvas${i}" width="760" height="260"></canvas>
-</div>
-
-<button type="button" onclick="clearCanvas(${i})">Clear Workspace</button>
-
-<br><br>
-
-<label><strong>Final Answer:</strong></label><br>
-<input class="student-response" id="answer${i}" placeholder="Type your final answer here">
-</div>
-
+${responseArea(p,i)}
 </details>`;
 });
 
@@ -214,6 +337,7 @@ document.getElementById("assessmentArea").scrollIntoView({behavior:"smooth"});
 function initCanvases(){
 for(let i=0;i<6;i++){
 const canvas=document.getElementById("canvas"+i);
+if(!canvas) continue;
 const ctx=canvas.getContext("2d");
 ctx.lineWidth=3;
 ctx.lineCap="round";
@@ -259,6 +383,7 @@ canvas.addEventListener("touchend",end);
 
 function clearCanvas(i){
 const canvas=document.getElementById("canvas"+i);
+if(!canvas) return;
 const ctx=canvas.getContext("2d");
 ctx.clearRect(0,0,canvas.width,canvas.height);
 }
