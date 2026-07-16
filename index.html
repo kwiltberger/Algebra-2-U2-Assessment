@@ -12,9 +12,9 @@ body{font-family:Arial,sans-serif;background:#f6f9fb;color:#1f2933;line-height:1
 .green{background:#eefaf1;border-left-color:#3ca65c}
 .yellow{background:#fff8e6;border-left-color:#f2b705}
 .gray{background:#f6f9fb;border-left-color:#d6e6ef}
-.purple{background:#f3e5f5;border-left-color:#9c64a6}
-input{width:100%;max-width:420px;padding:12px;font-size:16px;border:2px solid #d6e6ef;border-radius:8px;margin:6px 0 12px}
-button{background:#0f2d44;color:white;border:none;padding:12px 18px;border-radius:8px;cursor:pointer;font-size:16px}
+input,textarea{width:100%;max-width:720px;padding:12px;font-size:16px;border:2px solid #d6e6ef;border-radius:8px;margin:6px 0 12px;box-sizing:border-box}
+textarea{min-height:90px;resize:vertical}
+button{background:#0f2d44;color:white;border:none;padding:12px 18px;border-radius:8px;cursor:pointer;font-size:16px;margin:6px 4px 6px 0}
 button:disabled{background:#7b8794;cursor:not-allowed}
 .problem{background:white;border:1px solid #d6e6ef;padding:14px;border-radius:8px;margin:12px 0}
 details{background:#f6f9fb;border:1px solid #d6e6ef;border-radius:8px;padding:12px;margin:12px 0}
@@ -22,8 +22,10 @@ summary{cursor:pointer;color:#0f2d44;font-weight:bold}
 table{width:100%;border-collapse:collapse;margin-top:12px}
 td,th{border:1px solid #d6e6ef;padding:10px}
 th{background:#0f2d44;color:white}
+.canvas-wrap{background:white;border:2px solid #d6e6ef;border-radius:8px;padding:10px;margin-top:8px;overflow-x:auto}
+canvas{border:1px solid #b8c7d1;background:white;touch-action:none}
 #assessmentArea{display:none}
-@media print{button,input{display:none}body{background:white}}
+@media print{button,input,textarea{display:none}body{background:white}}
 </style>
 </head>
 
@@ -43,13 +45,10 @@ th{background:#0f2d44;color:white}
 <label><strong>First Name:</strong></label><br>
 <input id="firstName">
 
-<br>
-
 <label><strong>Last Name:</strong></label><br>
 <input id="lastName">
 
 <br>
-
 <button id="generateBtn" onclick="generateAssessment()">Generate Assessment</button>
 </div>
 
@@ -85,7 +84,6 @@ th{background:#0f2d44;color:white}
 <div class="card yellow">
 <h2>Recording Reminder</h2>
 <p>Your screen recording should be <strong>3–5 minutes</strong>.</p>
-<p>In your recording:</p>
 <p>☐ Say your assessment code.</p>
 <p>☐ Show the generated problems clearly.</p>
 <p>☐ Solve all 6 problems.</p>
@@ -99,7 +97,7 @@ th{background:#0f2d44;color:white}
 </div>
 
 <script>
-const complexProblems = [
+const complexProblems=[
 {t:"Identify the real and imaginary parts of the complex number −6 + 4i. Remember: the imaginary part should include i."},
 {t:"Identify the real and imaginary parts of the complex number 9 − 7i. Remember: the imaginary part should include i."},
 {t:"Simplify: (5 + 3i) + (−2 + 8i). Write your answer in a + bi form."},
@@ -110,7 +108,7 @@ const complexProblems = [
 {t:"Simplify: i^34."}
 ];
 
-const quadraticProblems = [
+const quadraticProblems=[
 {t:"Solve using the Zero Product Property: (x − 6)(x + 4) = 0."},
 {t:"Solve using the Zero Product Property: x(x − 9) = 0."},
 {t:"Solve by taking square roots: x² + 64 = 0."},
@@ -123,7 +121,7 @@ const quadraticProblems = [
 {t:"Solve using the quadratic formula: 2x² + 5x − 3 = 0."}
 ];
 
-const polynomialProblems = [
+const polynomialProblems=[
 {t:"Find the zeros of f(x) = (x + 5)(x − 2)(x − 7)."},
 {t:"Find the zeros of f(x) = −2(x − 3)(x + 1)²."},
 {t:"Use the Factor Theorem to determine whether (x − 2) is a factor of f(x)=x³ − 5x² + 2x + 8."},
@@ -143,7 +141,7 @@ let second=copy.splice(Math.floor(Math.random()*copy.length),1)[0];
 return [first,second];
 }
 
-function code(){
+function makeCode(){
 return "U2A-" + Math.random().toString(36).substring(2,7).toUpperCase();
 }
 
@@ -158,7 +156,7 @@ return;
 
 const now=new Date();
 document.getElementById("studentDisplay").textContent=first+" "+last;
-document.getElementById("assessmentCode").textContent=code();
+document.getElementById("assessmentCode").textContent=makeCode();
 document.getElementById("dateDisplay").textContent=now.toLocaleDateString();
 document.getElementById("timeDisplay").textContent=now.toLocaleTimeString();
 
@@ -186,13 +184,81 @@ html+=`
 <p><strong>Problem ${i+1}:</strong></p>
 <p>${p.t}</p>
 </div>
+
+<div class="card gray">
+<label><strong>Final Answer:</strong></label><br>
+<input class="student-response" id="answer${i}" placeholder="Type your final answer here">
+
+<label><strong>Explain Your Reasoning:</strong></label><br>
+<textarea class="student-response" id="reason${i}" placeholder="Explain your steps and reasoning here"></textarea>
+
+<label><strong>Mathematical Workspace:</strong></label>
+<p>Use this space to show work, organize steps, or sketch a graph while recording.</p>
+<div class="canvas-wrap">
+<canvas id="canvas${i}" width="760" height="240"></canvas>
+</div>
+<button type="button" onclick="clearCanvas(${i})">Clear Workspace</button>
+</div>
 </details>`;
 });
 
 document.getElementById("problems").innerHTML=html;
 document.getElementById("assessmentArea").style.display="block";
 document.getElementById("generateBtn").disabled=true;
+initCanvases();
 document.getElementById("assessmentArea").scrollIntoView({behavior:"smooth"});
+}
+
+function initCanvases(){
+for(let i=0;i<6;i++){
+const canvas=document.getElementById("canvas"+i);
+const ctx=canvas.getContext("2d");
+ctx.lineWidth=3;
+ctx.lineCap="round";
+ctx.strokeStyle="#0f2d44";
+let drawing=false;
+
+function pos(e){
+const rect=canvas.getBoundingClientRect();
+const clientX=e.touches ? e.touches[0].clientX : e.clientX;
+const clientY=e.touches ? e.touches[0].clientY : e.clientY;
+return {x:clientX-rect.left,y:clientY-rect.top};
+}
+
+function start(e){
+drawing=true;
+const p=pos(e);
+ctx.beginPath();
+ctx.moveTo(p.x,p.y);
+e.preventDefault();
+}
+
+function draw(e){
+if(!drawing)return;
+const p=pos(e);
+ctx.lineTo(p.x,p.y);
+ctx.stroke();
+e.preventDefault();
+}
+
+function end(){
+drawing=false;
+}
+
+canvas.addEventListener("mousedown",start);
+canvas.addEventListener("mousemove",draw);
+canvas.addEventListener("mouseup",end);
+canvas.addEventListener("mouseleave",end);
+canvas.addEventListener("touchstart",start,{passive:false});
+canvas.addEventListener("touchmove",draw,{passive:false});
+canvas.addEventListener("touchend",end);
+}
+}
+
+function clearCanvas(i){
+const canvas=document.getElementById("canvas"+i);
+const ctx=canvas.getContext("2d");
+ctx.clearRect(0,0,canvas.width,canvas.height);
 }
 </script>
 
