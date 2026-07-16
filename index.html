@@ -24,7 +24,7 @@ td,th{border:1px solid #d6e6ef;padding:10px}
 th{background:#0f2d44;color:white}
 .canvas-wrap{background:white;border:2px solid #d6e6ef;border-radius:8px;padding:10px;margin-top:8px;overflow-x:auto}
 canvas{border:1px solid #b8c7d1;background:white;touch-action:none}
-#assessmentArea{display:none}
+#assessmentArea,#completionScreen{display:none}
 @media print{button,input,select{display:none}body{background:white}}
 </style>
 </head>
@@ -64,7 +64,7 @@ canvas{border:1px solid #b8c7d1;background:white;touch-action:none}
 <tr><th>Student</th><td id="studentDisplay"></td></tr>
 <tr><th>Assessment Code</th><td id="assessmentCode"></td></tr>
 <tr><th>Date</th><td id="dateDisplay"></td></tr>
-<tr><th>Time</th><td id="timeDisplay"></td></tr>
+<tr><th>Time Started</th><td id="timeDisplay"></td></tr>
 </tbody>
 </table>
 </div>
@@ -90,12 +90,46 @@ canvas{border:1px solid #b8c7d1;background:white;touch-action:none}
 <p>☐ Explain your reasoning out loud.</p>
 <p>☐ Use correct Algebra 2 vocabulary.</p>
 <p>☐ Explain how you know your answers make sense.</p>
+
+<p style="text-align:center; margin-top:24px;">
+<button id="finishBtn" onclick="finishAssessment()" style="font-size:18px;padding:14px 24px;">
+Finish Assessment &amp; Prepare to Submit
+</button>
+</p>
 </div>
 
 </div>
+
+<div id="completionScreen" class="card green">
+<h2>Assessment Complete</h2>
+<p><strong>Congratulations!</strong> You have completed your Unit 2 Assessment.</p>
+
+<table>
+<tbody>
+<tr><th>Student</th><td id="finishStudent"></td></tr>
+<tr><th>Assessment Code</th><td id="finishCode"></td></tr>
+<tr><th>Date</th><td id="finishDate"></td></tr>
+<tr><th>Time Finished</th><td id="finishTime"></td></tr>
+<tr><th>Assessment Duration</th><td id="finishDuration"></td></tr>
+</tbody>
+</table>
+
+<h3>Before Leaving This Page</h3>
+<p>☐ I completed all six assessment problems.</p>
+<p>☐ I explained my reasoning aloud.</p>
+<p>☐ I recorded my work.</p>
+<p>☐ I am ready to upload my recording to Canvas.</p>
+
+<div style="background:#0f2d44;color:white;padding:18px;border-radius:8px;margin-top:18px;">
+<strong>Remember:</strong> This page does <strong>not</strong> submit your assessment. Upload your completed screen recording in Canvas.
+</div>
+</div>
+
 </div>
 
 <script>
+let assessmentStartTime = null;
+
 const complexProblems=[
 {type:"standard",t:"Identify the real and imaginary parts of the complex number −6 + 4i. Remember: the imaginary part should include i."},
 {type:"standard",t:"Identify the real and imaginary parts of the complex number 9 − 7i. Remember: the imaginary part should include i."},
@@ -153,8 +187,7 @@ return `
 <canvas id="canvas${i}" width="760" height="260"></canvas>
 </div>
 <button type="button" onclick="clearCanvas(${i})">Clear Workspace</button>
-<br><br>
-`;
+<br><br>`;
 }
 
 function standardAnswer(i){
@@ -202,22 +235,18 @@ function endBehaviorAnswer(i){
 return `
 <h4 style="color:#0f2d44;">Final Answer</h4>
 <p>Select the end behavior.</p>
-<p>
-Left end:
+<p>Left end:
 <select class="small" id="left${i}">
 <option value="">Choose one</option>
 <option>Rises</option>
 <option>Falls</option>
-</select>
-</p>
-<p>
-Right end:
+</select></p>
+<p>Right end:
 <select class="small" id="right${i}">
 <option value="">Choose one</option>
 <option>Rises</option>
 <option>Falls</option>
-</select>
-</p>
+</select></p>
 </div>`;
 }
 
@@ -225,46 +254,23 @@ function fullPolyAnswer(i){
 return `
 <h4 style="color:#0f2d44;">Final Answer</h4>
 <p>Complete the table for the zeros, multiplicity, and graph behavior.</p>
-
 <table>
 <tbody>
-<tr>
-<th>Zero</th>
-<th>Multiplicity</th>
-<th>Graph Behavior</th>
-</tr>
+<tr><th>Zero</th><th>Multiplicity</th><th>Graph Behavior</th></tr>
 <tr>
 <td><input class="small" id="poly${i}_z1" placeholder="zero"></td>
 <td><input class="small" id="poly${i}_m1" placeholder="multiplicity"></td>
-<td>
-<select id="poly${i}_b1">
-<option value="">Choose one</option>
-<option>Crosses the x-axis</option>
-<option>Touches and turns</option>
-</select>
-</td>
+<td><select id="poly${i}_b1"><option value="">Choose one</option><option>Crosses the x-axis</option><option>Touches and turns</option></select></td>
 </tr>
 <tr>
 <td><input class="small" id="poly${i}_z2" placeholder="zero"></td>
 <td><input class="small" id="poly${i}_m2" placeholder="multiplicity"></td>
-<td>
-<select id="poly${i}_b2">
-<option value="">Choose one</option>
-<option>Crosses the x-axis</option>
-<option>Touches and turns</option>
-</select>
-</td>
+<td><select id="poly${i}_b2"><option value="">Choose one</option><option>Crosses the x-axis</option><option>Touches and turns</option></select></td>
 </tr>
 <tr>
 <td><input class="small" id="poly${i}_z3" placeholder="zero if needed"></td>
 <td><input class="small" id="poly${i}_m3" placeholder="multiplicity if needed"></td>
-<td>
-<select id="poly${i}_b3">
-<option value="">Choose one if needed</option>
-<option>Crosses the x-axis</option>
-<option>Touches and turns</option>
-</select>
-</td>
+<td><select id="poly${i}_b3"><option value="">Choose one if needed</option><option>Crosses the x-axis</option><option>Touches and turns</option></select></td>
 </tr>
 </tbody>
 </table>
@@ -273,14 +279,12 @@ return `
 
 function responseArea(problem,i){
 let html=workspace(i);
-
 if(problem.type==="zeros") html+=zerosAnswer(i);
 else if(problem.type==="factor") html+=factorAnswer(i);
 else if(problem.type==="remainder") html+=remainderAnswer(i);
 else if(problem.type==="end") html+=endBehaviorAnswer(i);
 else if(problem.type==="fullPoly") html+=fullPolyAnswer(i);
 else html+=standardAnswer(i);
-
 return html;
 }
 
@@ -293,11 +297,12 @@ alert("Please enter your first and last name.");
 return;
 }
 
-const now=new Date();
+assessmentStartTime = new Date();
+
 document.getElementById("studentDisplay").textContent=first+" "+last;
 document.getElementById("assessmentCode").textContent=makeCode();
-document.getElementById("dateDisplay").textContent=now.toLocaleDateString();
-document.getElementById("timeDisplay").textContent=now.toLocaleTimeString();
+document.getElementById("dateDisplay").textContent=assessmentStartTime.toLocaleDateString();
+document.getElementById("timeDisplay").textContent=assessmentStartTime.toLocaleTimeString();
 
 const selected=[
 ...sampleTwo(complexProblems),
@@ -367,9 +372,7 @@ ctx.stroke();
 e.preventDefault();
 }
 
-function end(){
-drawing=false;
-}
+function end(){ drawing=false; }
 
 canvas.addEventListener("mousedown",start);
 canvas.addEventListener("mousemove",draw);
@@ -386,6 +389,34 @@ const canvas=document.getElementById("canvas"+i);
 if(!canvas) return;
 const ctx=canvas.getContext("2d");
 ctx.clearRect(0,0,canvas.width,canvas.height);
+}
+
+function finishAssessment(){
+if(!assessmentStartTime){
+alert("Please generate your assessment first.");
+return;
+}
+
+const finish=new Date();
+const duration=Math.max(1,Math.round((finish-assessmentStartTime)/60000));
+
+document.getElementById("finishStudent").textContent=document.getElementById("studentDisplay").textContent;
+document.getElementById("finishCode").textContent=document.getElementById("assessmentCode").textContent;
+document.getElementById("finishDate").textContent=finish.toLocaleDateString();
+document.getElementById("finishTime").textContent=finish.toLocaleTimeString();
+document.getElementById("finishDuration").textContent=duration+" minute"+(duration===1?"":"s");
+
+document.querySelectorAll("input").forEach(i=>i.disabled=true);
+document.querySelectorAll("select").forEach(s=>s.disabled=true);
+document.querySelectorAll("canvas").forEach(c=>c.style.pointerEvents="none");
+
+document.querySelectorAll("button").forEach(b=>{
+if(b.id!=="finishBtn") b.disabled=true;
+});
+
+document.getElementById("finishBtn").disabled=true;
+document.getElementById("completionScreen").style.display="block";
+document.getElementById("completionScreen").scrollIntoView({behavior:"smooth"});
 }
 </script>
 
